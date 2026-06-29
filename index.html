@@ -19,9 +19,21 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        // =====================================================================
+        // 👇 PEGA TU ENLACE AQUÍ ADENTRO (ENTRE LAS COMILLAS) 👇
+        // =====================================================================
+        
+        const URL_INTEGRADA = "https://script.google.com/macros/s/AKfycbyDQkqquQNbTa5Jm_Bbq6Cx5Rqjfss6jqY8yC-pqkqPoxtvIu2vMt3KGEUZTy4R7qhkog/exec";
+        
+        // =====================================================================
+        // 👆 PEGA TU ENLACE AQUÍ ADENTRO (ENTRE LAS COMILLAS) 👆
+        // =====================================================================
+
+
+
         const { useState, useEffect } = React;
 
-        // --- ICONOS (Reemplazando lucide-react para compatibilidad web directa) ---
+        // --- ICONOS ---
         const Trophy = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7c0 3.31 2.69 6 6 6s6-2.69 6-6V2Z"/></svg>;
         const Settings = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
         const List = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>;
@@ -30,7 +42,7 @@
         const User = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
         const RotateCcw = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
 
-        // --- CONFIGURACIÓN OFICIAL FIFA 2026 (Partidos 73 al 104) ---
+        // --- CONFIGURACIÓN OFICIAL FIFA 2026 ---
         const ROUNDS = [
           { id: 'R32', name: 'Dieciseisavos de Final', matches: Array.from({length: 16}, (_, i) => `M${i+73}`) },
           { id: 'R16', name: 'Octavos de Final', matches: Array.from({length: 8}, (_, i) => `M${i+89}`) },
@@ -99,20 +111,18 @@
           const [teams, setTeams] = useState(OFFICIAL_TEAMS_BRACKET);
           const [picks, setPicks] = useState({});
           const [participantName, setParticipantName] = useState('');
-          const [webhookUrl, setWebhookUrl] = useState('');
+          const [webhookUrl, setWebhookUrl] = useState(URL_INTEGRADA); 
           const [isSubmitting, setIsSubmitting] = useState(false);
           const [submitStatus, setSubmitStatus] = useState(null); 
 
           useEffect(() => {
             const savedTeams = localStorage.getItem('quiniela_teams_2026_bracket_oficial');
-            const savedUrl = localStorage.getItem('quiniela_webhook');
             const savedPicks = localStorage.getItem('quiniela_picks_bracket_oficial');
             const savedName = localStorage.getItem('quiniela_name');
             
             if (savedTeams) {
               try { setTeams(JSON.parse(savedTeams)); } catch (e) { setTeams(OFFICIAL_TEAMS_BRACKET); }
             }
-            if (savedUrl) setWebhookUrl(savedUrl);
             if (savedPicks) {
               try { setPicks(JSON.parse(savedPicks)); } catch (e) { setPicks({}); }
             }
@@ -173,7 +183,7 @@
 
             const payload = { name: participantName, timestamp: new Date().toISOString(), picks: picks };
 
-            if (webhookUrl) {
+            if (webhookUrl && webhookUrl !== "AQUI_PEGA_TU_URL_DE_GOOGLE_SHEETS") {
               try {
                 await fetch(webhookUrl, {
                   method: 'POST',
@@ -187,6 +197,7 @@
                 setSubmitStatus('error');
               }
             } else {
+              // Si no configuraste el link o dejaste el de prueba, descarga el archivo.
               downloadCSV();
               setSubmitStatus('success');
             }
@@ -243,14 +254,10 @@
                         <input 
                           type="text" 
                           value={webhookUrl}
-                          onChange={(e) => {
-                            setWebhookUrl(e.target.value);
-                            localStorage.setItem('quiniela_webhook', e.target.value);
-                          }}
-                          placeholder="https://script.google.com/macros/s/..." 
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8A1538] focus:ring-[#8A1538] p-2 border"
+                          readOnly
+                          className="mt-1 block w-full rounded-md border-gray-300 bg-gray-200 text-gray-500 shadow-sm p-2 border cursor-not-allowed"
                         />
-                        <p className="text-xs text-gray-500 mt-2">Pega aquí el enlace de Apps Script para recibir respuestas automáticas en tu Excel.</p>
+                        <p className="text-xs text-gray-500 mt-2">La URL ya está integrada en el código y no necesita modificarse aquí.</p>
                       </label>
                     </div>
 
@@ -378,7 +385,7 @@
                       >
                         {isSubmitting ? (
                           <span>Procesando...</span>
-                        ) : webhookUrl ? (
+                        ) : (webhookUrl && webhookUrl !== "AQUI_PEGA_TU_URL_DE_GOOGLE_SHEETS") ? (
                           <><Send size={24} /> <span>Enviar Pronóstico</span></>
                         ) : (
                           <><Download size={24} /> <span>Descargar Quiniela</span></>
