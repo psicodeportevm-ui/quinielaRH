@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiniela Mundial 2026</title>
+    
+    <!-- Tailwind CSS para los estilos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React y ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel para compilar JSX en el navegador -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- ICONOS (Reemplazando lucide-react para compatibilidad web directa) ---
+        const Trophy = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7c0 3.31 2.69 6 6 6s6-2.69 6-6V2Z"/></svg>;
+        const Settings = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>;
+        const List = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>;
+        const Send = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>;
+        const Download = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>;
+        const User = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+        const RotateCcw = ({ size = 24, className = "" }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
+
+        // --- CONFIGURACIÓN OFICIAL FIFA 2026 (Partidos 73 al 104) ---
+        const ROUNDS = [
+          { id: 'R32', name: 'Dieciseisavos de Final', matches: Array.from({length: 16}, (_, i) => `M${i+73}`) },
+          { id: 'R16', name: 'Octavos de Final', matches: Array.from({length: 8}, (_, i) => `M${i+89}`) },
+          { id: 'QF', name: 'Cuartos de Final', matches: Array.from({length: 4}, (_, i) => `M${i+97}`) },
+          { id: 'SF', name: 'Semifinales', matches: ['M101', 'M102'] },
+          { id: '3RD', name: 'Tercer Lugar', matches: ['M103'] },
+          { id: 'F', name: 'Gran Final', matches: ['M104'] }
+        ];
+
+        const MATCH_DEPS = {
+          'M73': { t1: 0, t2: 1, type: 'initial' },
+          'M74': { t1: 2, t2: 3, type: 'initial' },
+          'M75': { t1: 4, t2: 5, type: 'initial' },
+          'M76': { t1: 6, t2: 7, type: 'initial' },
+          'M77': { t1: 8, t2: 9, type: 'initial' },
+          'M78': { t1: 10, t2: 11, type: 'initial' },
+          'M79': { t1: 12, t2: 13, type: 'initial' },
+          'M80': { t1: 14, t2: 15, type: 'initial' },
+          'M81': { t1: 16, t2: 17, type: 'initial' },
+          'M82': { t1: 18, t2: 19, type: 'initial' },
+          'M83': { t1: 20, t2: 21, type: 'initial' },
+          'M84': { t1: 22, t2: 23, type: 'initial' },
+          'M85': { t1: 24, t2: 25, type: 'initial' },
+          'M86': { t1: 26, t2: 27, type: 'initial' },
+          'M87': { t1: 28, t2: 29, type: 'initial' },
+          'M88': { t1: 30, t2: 31, type: 'initial' },
+          'M89': { t1: 'M74', t2: 'M77', type: 'winner' },
+          'M90': { t1: 'M73', t2: 'M75', type: 'winner' },
+          'M91': { t1: 'M76', t2: 'M78', type: 'winner' },
+          'M92': { t1: 'M79', t2: 'M80', type: 'winner' },
+          'M93': { t1: 'M83', t2: 'M84', type: 'winner' },
+          'M94': { t1: 'M81', t2: 'M82', type: 'winner' },
+          'M95': { t1: 'M86', t2: 'M88', type: 'winner' },
+          'M96': { t1: 'M85', t2: 'M87', type: 'winner' },
+          'M97': { t1: 'M89', t2: 'M90', type: 'winner' },
+          'M98': { t1: 'M93', t2: 'M94', type: 'winner' },
+          'M99': { t1: 'M91', t2: 'M92', type: 'winner' },
+          'M100': { t1: 'M95', t2: 'M96', type: 'winner' },
+          'M101': { t1: 'M97', t2: 'M98', type: 'winner' },
+          'M102': { t1: 'M99', t2: 'M100', type: 'winner' },
+          'M103': { t1: 'M101', t2: 'M102', type: 'loser' }, 
+          'M104': { t1: 'M101', t2: 'M102', type: 'winner' }, 
+        };
+
+        const OFFICIAL_TEAMS_BRACKET = [
+          "South Africa", "Canada", 
+          "Germany", "Paraguay", 
+          "Netherlands", "Morocco", 
+          "Brazil", "Japan", 
+          "France", "Sweden", 
+          "Ivory Coast", "Norway", 
+          "Mexico", "Ecuador", 
+          "England", "Congo DR", 
+          "United States", "Bosnia & Herzegovina", 
+          "Belgium", "Senegal", 
+          "Portugal", "Croatia", 
+          "Spain", "Austria", 
+          "Switzerland", "Algeria", 
+          "Argentina", "Cabo Verde", 
+          "Colombia", "Ghana", 
+          "Australia", "Egypt" 
+        ];
+
+        function App() {
+          const [activeTab, setActiveTab] = useState('quiniela'); 
+          const [teams, setTeams] = useState(OFFICIAL_TEAMS_BRACKET);
+          const [picks, setPicks] = useState({});
+          const [participantName, setParticipantName] = useState('');
+          const [webhookUrl, setWebhookUrl] = useState('');
+          const [isSubmitting, setIsSubmitting] = useState(false);
+          const [submitStatus, setSubmitStatus] = useState(null); 
+
+          useEffect(() => {
+            const savedTeams = localStorage.getItem('quiniela_teams_2026_bracket_oficial');
+            const savedUrl = localStorage.getItem('quiniela_webhook');
+            const savedPicks = localStorage.getItem('quiniela_picks_bracket_oficial');
+            const savedName = localStorage.getItem('quiniela_name');
+            
+            if (savedTeams) {
+              try { setTeams(JSON.parse(savedTeams)); } catch (e) { setTeams(OFFICIAL_TEAMS_BRACKET); }
+            }
+            if (savedUrl) setWebhookUrl(savedUrl);
+            if (savedPicks) {
+              try { setPicks(JSON.parse(savedPicks)); } catch (e) { setPicks({}); }
+            }
+            if (savedName) setParticipantName(savedName);
+          }, []);
+
+          useEffect(() => {
+            localStorage.setItem('quiniela_picks_bracket_oficial', JSON.stringify(picks));
+            localStorage.setItem('quiniela_name', participantName);
+          }, [picks, participantName]);
+
+          const handleTeamChange = (index, value) => {
+            const newTeams = [...teams];
+            newTeams[index] = value;
+            setTeams(newTeams);
+            localStorage.setItem('quiniela_teams_2026_bracket_oficial', JSON.stringify(newTeams));
+          };
+
+          const resetToOfficial = () => {
+            if(window.confirm('¿Seguro que deseas reiniciar los equipos a la configuración oficial del bracket de la imagen?')) {
+              setTeams(OFFICIAL_TEAMS_BRACKET);
+              localStorage.setItem('quiniela_teams_2026_bracket_oficial', JSON.stringify(OFFICIAL_TEAMS_BRACKET));
+              setPicks({}); 
+              localStorage.setItem('quiniela_picks_bracket_oficial', JSON.stringify({}));
+            }
+          };
+
+          const getLoser = (matchId) => {
+            const winner = picks[matchId];
+            const [t1, t2] = getTeamsForMatch(matchId);
+            if (!winner || !t1 || !t2) return null;
+            return winner === t1 ? t2 : t1;
+          };
+
+          const getTeamsForMatch = (matchId) => {
+            const dep = MATCH_DEPS[matchId];
+            if (!dep) return [null, null];
+            if (dep.type === 'initial') return [teams[dep.t1], teams[dep.t2]];
+            if (dep.type === 'winner') return [picks[dep.t1] || null, picks[dep.t2] || null];
+            if (dep.type === 'loser') return [getLoser(dep.t1) || null, getLoser(dep.t2) || null];
+            return [null, null];
+          };
+
+          const handlePick = (matchId, selectedTeam) => {
+            if (!selectedTeam) return;
+            setPicks(prev => ({ ...prev, [matchId]: selectedTeam }));
+            setSubmitStatus(null);
+          };
+
+          const isBracketComplete = () => Object.keys(picks).length === 32 && participantName.trim() !== '';
+
+          const handleSubmit = async () => {
+            if (!participantName.trim()) return alert("Por favor, ingresa tu nombre.");
+            if (Object.keys(picks).length < 32) return alert("Por favor, completa todos los partidos antes de enviar.");
+
+            setIsSubmitting(true);
+            setSubmitStatus(null);
+
+            const payload = { name: participantName, timestamp: new Date().toISOString(), picks: picks };
+
+            if (webhookUrl) {
+              try {
+                await fetch(webhookUrl, {
+                  method: 'POST',
+                  mode: 'no-cors',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload)
+                });
+                setSubmitStatus('success');
+              } catch (error) {
+                console.error('Error al enviar:', error);
+                setSubmitStatus('error');
+              }
+            } else {
+              downloadCSV();
+              setSubmitStatus('success');
+            }
+            setIsSubmitting(false);
+          };
+
+          const downloadCSV = () => {
+            let csv = "Nombre," + Object.keys(MATCH_DEPS).join(",") + "\n";
+            csv += `"${participantName}",` + Object.keys(MATCH_DEPS).map(m => `"${picks[m] || ''}"`).join(",") + "\n";
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Quiniela_Mundial26_${participantName.replace(/\s+/g, '_')}.csv`;
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          };
+
+          return (
+            <div className="min-h-screen pb-20 font-sans text-gray-800">
+              <header className="bg-[#8A1538] text-white p-4 shadow-md sticky top-0 z-10">
+                <div className="max-w-4xl mx-auto flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Trophy size={24} className="text-[#F8C300]" />
+                    <h1 className="text-xl font-bold tracking-wide">Quiniela 2026</h1>
+                  </div>
+                  <div className="flex space-x-4">
+                    <button 
+                      onClick={() => setActiveTab('quiniela')}
+                      className={`flex items-center space-x-1 ${activeTab === 'quiniela' ? 'text-[#F8C300]' : 'text-pink-200 hover:text-white'}`}
+                    >
+                      <List size={20} /> <span className="hidden sm:inline">Llaves</span>
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab('settings')}
+                      className={`flex items-center space-x-1 ${activeTab === 'settings' ? 'text-[#F8C300]' : 'text-pink-200 hover:text-white'}`}
+                    >
+                      <Settings size={20} /> <span className="hidden sm:inline">Configurar</span>
+                    </button>
+                  </div>
+                </div>
+              </header>
+
+              <main className="max-w-4xl mx-auto p-4 mt-4">
+                {activeTab === 'settings' && (
+                  <div className="bg-white rounded-xl shadow-sm p-6 space-y-8">
+                    <div>
+                      <h2 className="text-2xl font-bold mb-2 text-gray-900 border-b pb-2">Configuración del Organizador</h2>
+                      <p className="text-sm text-gray-500 mb-6">Solo el organizador debería modificar esto. Los cambios se guardan localmente.</p>
+                      
+                      <label className="block mb-4 p-4 bg-gray-50 border rounded-lg">
+                        <span className="text-gray-700 font-bold block mb-1">URL de Google Sheets (Webhook)</span>
+                        <input 
+                          type="text" 
+                          value={webhookUrl}
+                          onChange={(e) => {
+                            setWebhookUrl(e.target.value);
+                            localStorage.setItem('quiniela_webhook', e.target.value);
+                          }}
+                          placeholder="https://script.google.com/macros/s/..." 
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8A1538] focus:ring-[#8A1538] p-2 border"
+                        />
+                        <p className="text-xs text-gray-500 mt-2">Pega aquí el enlace de Apps Script para recibir respuestas automáticas en tu Excel.</p>
+                      </label>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-xl font-bold text-gray-900">Países Clasificados (Top 32)</h3>
+                        <button 
+                          onClick={resetToOfficial}
+                          className="flex items-center text-sm text-[#8A1538] hover:text-red-800 font-semibold transition"
+                        >
+                          <RotateCcw size={16} className="mr-1" /> Restaurar Bracket Oficial
+                        </button>
+                      </div>
+                      <p className="text-sm text-gray-500 mb-4">Estos son los equipos extraídos de la imagen del bracket proporcionada.</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {teams.map((team, index) => {
+                          const matchIndex = Math.floor(index / 2);
+                          const matchNumber = 73 + matchIndex;
+                          const teamPosition = index % 2 === 0 ? 1 : 2;
+
+                          return (
+                            <div key={index} className="flex flex-col">
+                              <label className="text-[10px] text-gray-400 font-mono uppercase truncate">M{matchNumber} - Eq {teamPosition}</label>
+                              <input 
+                                type="text" 
+                                value={team} 
+                                onChange={(e) => handleTeamChange(index, e.target.value)}
+                                className="border rounded p-2 text-sm focus:border-[#8A1538] focus:ring-1 focus:ring-[#8A1538] outline-none bg-white"
+                                readOnly
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === 'quiniela' && (
+                  <div className="space-y-6">
+                    <div className="bg-white rounded-xl shadow-sm p-6 border-l-4 border-[#8A1538]">
+                      <label className="flex flex-col">
+                        <span className="text-lg font-bold text-gray-800 flex items-center mb-2">
+                          <User size={20} className="mr-2" /> Nombre del Participante
+                        </span>
+                        <input 
+                          type="text" 
+                          value={participantName}
+                          onChange={(e) => setParticipantName(e.target.value)}
+                          placeholder="Escribe tu nombre aquí..." 
+                          className="border-2 border-gray-200 rounded-lg p-3 text-lg focus:border-[#8A1538] focus:ring-0 outline-none transition-colors"
+                        />
+                      </label>
+                    </div>
+
+                    {ROUNDS.map((round, rIndex) => (
+                      <div key={round.id} className="bg-white rounded-xl shadow-sm p-4 sm:p-6 overflow-hidden">
+                        <div className="flex items-center justify-between mb-4 bg-gray-100 py-3 px-4 rounded-lg">
+                          <h3 className="text-lg font-black text-gray-800 uppercase tracking-wider">
+                            {round.name}
+                          </h3>
+                          <span className="text-xs font-bold text-gray-400 uppercase">Fase {rIndex + 1}</span>
+                        </div>
+                        
+                        <div className={`grid gap-4 ${round.matches.length > 2 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 md:grid-cols-2'}`}>
+                          {round.matches.map(matchId => {
+                            const [t1, t2] = getTeamsForMatch(matchId);
+                            const isReady = t1 && t2; 
+                            const selected = picks[matchId];
+                            const isFinal = matchId === 'M104';
+                            const isThird = matchId === 'M103';
+
+                            return (
+                              <div key={matchId} className={`border rounded-xl p-3 flex flex-col justify-center transition-all ${isReady ? 'border-gray-300 bg-gray-50' : 'border-dashed border-gray-200 opacity-60'} ${isFinal ? 'ring-2 ring-[#F8C300] bg-yellow-50' : ''}`}>
+                                <div className="flex justify-between items-center mb-2">
+                                  <span className={`text-[10px] font-bold px-2 py-1 rounded ${isFinal ? 'bg-[#F8C300] text-yellow-900' : isThird ? 'bg-gray-300 text-gray-700' : 'bg-gray-200 text-gray-600'}`}>
+                                    Partido {matchId.replace('M','')}
+                                  </span>
+                                </div>
+                                
+                                <div className="space-y-1 relative">
+                                  <button 
+                                    disabled={!isReady}
+                                    onClick={() => handlePick(matchId, t1)}
+                                    className={`w-full p-2.5 rounded text-sm sm:text-base font-semibold transition-all text-left truncate ${selected === t1 && t1 != null ? 'bg-[#8A1538] text-white shadow' : isReady ? 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300' : 'bg-gray-100 text-gray-400 border border-transparent cursor-not-allowed'}`}
+                                  >
+                                    {t1 || 'Por definir'}
+                                  </button>
+                                  
+                                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-[10px] font-bold text-gray-400 z-10 shadow-sm">
+                                    vs
+                                  </div>
+                                  
+                                  <button 
+                                    disabled={!isReady}
+                                    onClick={() => handlePick(matchId, t2)}
+                                    className={`w-full p-2.5 rounded text-sm sm:text-base font-semibold transition-all text-left truncate ${selected === t2 && t2 != null ? 'bg-[#8A1538] text-white shadow' : isReady ? 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-300' : 'bg-gray-100 text-gray-400 border border-transparent cursor-not-allowed'}`}
+                                  >
+                                    {t2 || 'Por definir'}
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+
+                    <div className="bg-white rounded-xl shadow-sm p-8 text-center space-y-6 border-t-4 border-[#8A1538]">
+                      <div className="flex flex-col items-center justify-center text-sm text-gray-600">
+                        <span className="mb-2">Progreso de tu Quiniela:</span>
+                        <div className="w-full max-w-xs bg-gray-200 rounded-full h-2.5 mb-2">
+                          <div className="bg-[#8A1538] h-2.5 rounded-full" style={{ width: `${(Object.keys(picks).length / 32) * 100}%` }}></div>
+                        </div>
+                        <span className={`font-bold ${Object.keys(picks).length === 32 ? 'text-green-600' : 'text-[#8A1538]'}`}>
+                          {Object.keys(picks).length} / 32 Partidos Pronosticados
+                        </span>
+                      </div>
+                      
+                      <button
+                        onClick={handleSubmit}
+                        disabled={isSubmitting}
+                        className={`w-full sm:w-auto px-8 py-4 rounded-full font-bold text-lg text-white shadow-lg flex items-center justify-center mx-auto space-x-2 transition-all
+                          ${!isBracketComplete() ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#8A1538] hover:bg-red-900 hover:-translate-y-1'}`}
+                      >
+                        {isSubmitting ? (
+                          <span>Procesando...</span>
+                        ) : webhookUrl ? (
+                          <><Send size={24} /> <span>Enviar Pronóstico</span></>
+                        ) : (
+                          <><Download size={24} /> <span>Descargar Quiniela</span></>
+                        )}
+                      </button>
+
+                      {submitStatus === 'success' && (
+                        <div className="p-4 bg-green-100 text-green-800 rounded-lg font-semibold mt-4">
+                          ¡Tu quiniela ha sido registrada exitosamente! ¡Que gane el mejor! 🏆
+                        </div>
+                      )}
+                      {submitStatus === 'error' && (
+                        <div className="p-4 bg-red-100 text-red-800 rounded-lg font-semibold mt-4">
+                          Hubo un error al enviar. Asegúrate de que tu organizador configuró bien el enlace.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </main>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
